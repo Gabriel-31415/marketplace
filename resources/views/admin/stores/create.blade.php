@@ -4,6 +4,7 @@
 	<h1>Criar Loja</h1>
 	<form action="{{ route('admin.stores.store') }}" method="POST">
 		@csrf
+		
 		<div class="form-group">
 			<label for="">Nome Loja</label>
 			<input type="text" name="name" class="form-control">
