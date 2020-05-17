@@ -13,9 +13,11 @@
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('home');
 
-Route::prefix('admin')->name('admin.')->namespace('Admin')->group(function(){
+Route::group(['middleware'=>'auth'], function(){
+
+	Route::prefix('admin')->name('admin.')->namespace('Admin')->group(function(){
 
 	// Route::prefix('stores')->name('stores.')->group(function(){
 	// 	Route::get('/',        'StoreController@index')->name('index');
@@ -32,3 +34,10 @@ Route::prefix('admin')->name('admin.')->namespace('Admin')->group(function(){
 });
 
 
+});
+
+
+
+Auth::routes();
+
+//Route::get('/home', 'HomeController@index')->name('home');
