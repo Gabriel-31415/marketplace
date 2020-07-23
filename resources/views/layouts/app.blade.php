@@ -19,19 +19,22 @@
 	  <div class="collapse navbar-collapse" id="navbarSupportedContent">
 		@auth
 	    <ul class="navbar-nav mr-auto">
-	      <li class="nav-item @if(request()->is('admin/stores')) active @endif">
+	      <li class="nav-item @if(request()->is('admin/stores*')) active @endif">
 	        <a class="nav-link" href="{{ route('admin.stores.index') }}">Loja <span class="sr-only">(current)</span></a>
 	      </li>
-	      <li class="nav-item @if(request()->is('admin/products')) active @endif" >
+	      <li class="nav-item @if(request()->is('admin/products*')) active @endif" >
 	        <a class="nav-link" href="{{ route('admin.products.index') }}">Produtos</a>
 	      </li>
-	      
+				<li class="nav-item @if(request()->is('admin/categories*')) active @endif" >
+	        <a class="nav-link" href="{{ route('admin.categories.index') }}">Categorias</a>
+	      </li>
+
 	    </ul>
 	    <div class="form-inline my-2 my-lg-0">
 	      <ul class="navbar-nav mr-auto">
 		      <li class="nav-item active">
 		        <a class="nav-link" onclick="event.preventDefault(); document.querySelector('form.logout').submit();" href="#">Sair </a>
-				
+
 				<form action="{{ route('logout') }}" class="logout" method="POST" style="display: none;">
 					@csrf
 				</form>

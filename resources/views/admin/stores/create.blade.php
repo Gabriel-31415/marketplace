@@ -2,7 +2,7 @@
 
 @section('content')
 	<h1>Criar Loja</h1>
-	<form action="{{ route('admin.stores.store') }}" method="POST">
+	<form action="{{ route('admin.stores.store') }}" method="POST" enctype="multipart/form-data">
 		@csrf
 
 		<div class="form-group">
@@ -50,8 +50,13 @@
 		</div>
 
 		<div class="form-group">
-			<label for="">Slug</label>
-			<input type="text" name="slug" class="form-control">
+			<label for="logo">Foto da Loja</label>
+			<input type="file" id="logo" name="logo" class="form-control @error('logo') is-invalid @enderror">
+			@error('logo')
+				<div class="invalid-feedback">
+					{{ $message }}
+				</div>
+			@enderror
 		</div>
 
 		<div>
