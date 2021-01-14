@@ -29,6 +29,12 @@
             <li class="nav-item @if(request()->is('/')) active @endif">
                 <a class="nav-link" href="{{route('home')}}">Home <span class="sr-only">(current)</span></a>
             </li>
+
+            @foreach ($categories as $category)
+                <li class="nav-item @if(request()->is('category/'. $category->slug)) active @endif">
+                    <a class="nav-link" href="{{route('category.single', [$category->slug])}}">{{ $category->name }}</a>
+                </li>                
+            @endforeach
         </ul>
 
     @auth
@@ -57,6 +63,11 @@
                         {{-- <li class="nav-item">
                             <span class="nav-link">{{auth()->user()->name}}</span>
                         </li> --}}
+                        @auth
+                            <li class="nav-item @if(request()->is('my-orders')) active @endif">
+                                <a href="{{route('user.orders')}}" class="nav-link">Meus Pedidos</a>
+                            </li>
+                        @endauth
                         <li class="nav-item">
                             <a href="{{ route('cart.index') }}" class="nav-link">
                                 @if(session()->has('cart'))
@@ -78,5 +89,10 @@
     @yield('content')
 </div>
 @yield('scripts')
+    <script
+        src="https://code.jquery.com/jquery-2.2.4.min.js"
+        integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+        crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
