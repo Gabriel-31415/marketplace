@@ -130,7 +130,7 @@
                 data: data,
                 dataType: 'json',
                 success: function(res){
-                    toastr.success(res.data.message, 'Sucesso')
+                    // toastr.success(res.data.message, 'Sucesso')
                     window.location.href = '{{ route('checkout.thanks') }}?order=' + res.data.order;
                 },
                 error: function(err){
