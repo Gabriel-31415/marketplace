@@ -13,24 +13,29 @@ class CheckoutController extends Controller
 {
     public function index()
     {
-        // session()->forget('pagseguro_session_code');
-        if(!auth()->check()){
-            return redirect()->route('login');
+        try {
+            // session()->forget('pagseguro_session_code');
+            if(!auth()->check()){
+                return redirect()->route('login');
+            }
+
+            if(!session()->has('cart')) return redirect()->route('home');
+
+            $this->makePagSeguroSession();
+            var_dump(session()->get('pagseguro_session_code'));
+
+            $cartItems = array_map(function($line){
+                return  $line['amount'] * $line['price'];
+            }, session()->get('cart'));
+
+            $cartItems = array_sum($cartItems);
+
+            // dd($cartItems);
+            return view('checkout', compact('cartItems'));
+        } catch (\Throwable $e) {
+            session()->forget('pagseguro_session_code');
+            return redirect()->route('checkout.index');
         }
-
-        if(!session()->has('cart')) return redirect()->route('home');
-
-        $this->makePagSeguroSession();
-        var_dump(session()->get('pagseguro_session_code'));
-
-        $cartItems = array_map(function($line){
-            return  $line['amount'] * $line['price'];
-        }, session()->get('cart'));
-
-        $cartItems = array_sum($cartItems);
-
-        // dd($cartItems);
-        return view('checkout', compact('cartItems'));
     }
 
     public function proccess(Request $request)
@@ -70,7 +75,7 @@ class CheckoutController extends Controller
                 ]
             ]);
         } catch (\Exception $e) {
-            $message = env('APP_DEBUG') ? $e->getMessage() : 'Erro ao processar pedido!';
+            $message = env('APP_DEBUG') ? simplexml_load_string($e->getMessage()) : 'Erro ao processar pedido!';
             return response()->json([
                 'data' => [
                     'status' => false,
@@ -106,7 +111,7 @@ class CheckoutController extends Controller
 
 		    return response()->json([], 204);
 
-	    } catch (\Exception $e) {
+	    } catch (\Throwable $e) {
 			$message = env('APP_DEBUG') ? $e->getMessage() : '';
 
 		    return response()->json(['error' => $message], 500);

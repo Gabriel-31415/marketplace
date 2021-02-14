@@ -8,6 +8,11 @@
     <div class="container">
         <div class="col-md-6">
             <div class="row">
+                <div class="col-md-12 msg">
+
+                </div>
+            </div>
+            <div class="row">
                 <div class="col-md-12">
                     <h2>Dados para pagamento</h2>
                     <hr>
@@ -96,6 +101,11 @@
         submitButton.addEventListener('click', function(event){
 
             event.preventDefault();
+            document.querySelector('div.msg').innerHTML = '';
+
+            let buttonTarget = event.target;
+            buttonTarget.disable = true;
+            buttonTarget.innerHTML = 'Carregando...';
 
             PagSeguroDirectPayment.createCardToken({
                 cardNumber: document.querySelector('input[name=card_number]').value ,
@@ -105,16 +115,20 @@
                 expirationYear: document.querySelector('input[name=card_year]').value,
                 success: function(res){                    
                     // console.log(res);
-                    processPayment(res.card.token);
+                    processPayment(res.card.token, buttonTarget);
                 },
                 error: function(err){
-                    console.log(err)
+                    buttonTarget.disable = false;
+                    buttonTarget.innerHTML = 'Efetuar Pagamento';
+                    for(let i in err.errors){
+                        document.querySelector('div.msg').innerHTML = showErrorMessages(errorsMapPagseguroJS(i));
+                    }
                 },
                 
             })
         });
 
-        function processPayment(token)
+        function processPayment(token, buttonTarget)
         {
             let data = {
                 card_token: token,
@@ -131,11 +145,15 @@
                 dataType: 'json',
                 success: function(res){
                     // toastr.success(res.data.message, 'Sucesso')
+                    
                     window.location.href = '{{ route('checkout.thanks') }}?order=' + res.data.order;
                 },
                 error: function(err){
-                    console.log('err')
-                    console.log(err)
+                    buttonTarget.disable = false;
+                    buttonTarget.innerHTML = 'Efetuar Pagamento';
+                    let message = JSON.parse(err.responseText).data.message.error.message;
+                    document.querySelector('div.msg').innerHTML = showErrorMessages(message);
+                    
                 }
             });
         }
@@ -172,6 +190,45 @@
             select += '</select>';
 
             return select;
+        }
+
+        function showErrorMessages(message)
+        {
+            return `
+                <div class="alert alert-danger">${message}</div>
+            `;
+        }
+        function errorsMapPagseguroJS(code)
+        {
+            switch(code) {
+                case "10000":
+                    return 'Bandeira do cartão inválida!';
+                break;
+
+                case "10001":
+                    return 'Número do Cartão com tamanho inválido!';
+                break;
+
+                case "10002":
+                case  "30405":
+                    return 'Data com formato inválido!';
+                break;
+
+                case "10003":
+                    return 'Código de segurança inválido';
+                break;
+
+                case "10004":
+                    return 'Código de segurança é obrigatório!';
+                break;
+
+                case "10006":
+                    return 'Tamanho do código de segurança inválido!';
+                break;
+
+                default:
+                    return 'Houve um erro na validação do seu cartão de crédito!';
+            }
         }
 
     </script>

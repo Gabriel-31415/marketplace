@@ -60,7 +60,6 @@ class ProductController extends Controller
         $categories = $request->get('categories', null);
 
         $data['price'] = formatPriceToDatabase($data['price']);
-
         $store = Auth()->user()->store;
         $product = $store->products()->create($data);
 
@@ -136,10 +135,10 @@ class ProductController extends Controller
      */
     public function destroy($product)
     {
-        $data = $request->all();
-
+        
+        
         $product = $this->product->find($product);
-        $product->delete($data);
+        $product->delete();
 
         flash('Produto Removido com Sucesso!')->success();
         return redirect()->route('admin.products.index');
