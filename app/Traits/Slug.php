@@ -17,7 +17,6 @@ trait Slug
 
 	public function uniqueSlug($slug)
 	{   
-        // dd($this->table);
 		$matchs = DB::table($this->table)
 								->where('slug', 'like', $slug . '%')
 								->count();
